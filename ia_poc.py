@@ -11,7 +11,7 @@ import json
 import requests
 import urllib3
 import socket
-from netifaces import interfaces, ifaddresses, AF_INET # important for get_ipv4_from_machine()
+
 
 
 
@@ -42,6 +42,7 @@ class Connector():
 
 def get_ipv4_from_machine():
         try:
+            from netifaces import interfaces, ifaddresses, AF_INET # important for get_ipv4_from_machine()
             addresses = []
             for interface in interfaces():
                 config = ifaddresses(interface)
