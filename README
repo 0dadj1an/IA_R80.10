@@ -1,1 +1,467 @@
 
+Testing code for IA funcionality:
+
+
+payload has all needed data, data are pushed to FW and can be used for rule creation
+
+create local user group and add it in access role, use those access roles in rules - user group in payload will link to local user group in mgmt and user will be assigned to it
+
+| First Header  | Second Header |
+| ------------- | ------------- |
+| Content Cell  | Content Cell  |
+| Content Cell  | Content Cell  |
+
+
+Add Identity (v1.0)
+Description
+
+Creates a new Identity Awareness association for a specified IP address.
+
+Syntax
+
+POST https://<Gateway_IP_or_FQDN>/_IA_API/v1.0/add-identity
+
+Examples
+
+Example request 1: Minimum request for user identity generation
+
+POST https://gw.acme.com/_IA_API/v1.0/add-identity
+
+{
+
+ "shared-secret":"****",
+
+ "ip-address":"1.2.3.5",
+
+ "user":"mary",
+
+}
+
+Response 1
+
+{
+
+ "ipv4-address":"1.2.3.5",
+
+ "message":"Association sent to PDP."
+
+}
+
+Example request 2: User-defined groups, calculate roles
+
+POST https://gw.acme.com/_IA_API/v1.0/add-identity
+
+{
+
+ "shared-secret":"****",
+
+ "ip-address":"1.1.1.1",
+
+ "user":"john",
+
+ "machine":"",
+
+ "domain":"cme.com",
+
+ "user-groups": ["MyUserGroup"],
+
+ "roles":[],
+
+ "timeout":43200,
+
+ "fetch-user-groups":0,
+
+ "calculate-roles":1,
+
+ "identity-source":"ACME API Client"
+
+} 
+
+Response 2
+
+{
+
+ "ipv4-address":"1.1.1.1",
+
+ "message":"Association sent to PDP."
+
+}
+
+Example request 3: User-defined groups and roles, detailed information
+
+{
+
+ "shared-secret":"****",
+
+ "user":"John",
+
+ "machine":"Laptop_1234",
+
+ "ip-address":"2.2.2.2",
+
+ "identity-source":"ACME API Client",
+
+ "machine-os":"Windows 10 (Build 1176)",
+
+ "host-type":"Laptop",
+
+ "fetch-user-groups":0,
+
+ "fetch-machine-groups":0,
+
+ "calculate-roles":0,
+
+ "session-timeout":43200,
+
+ "user-groups":["EnterpriseFinanceUsers","ad_user_JohnDoe"],
+
+ "machine-groups":["EnterpriseLaptopMachines"],
+
+ "roles":["FinanceUser","StandardLaptop"]
+
+}
+
+Response 3
+
+{
+
+ "ipv4-address" : "2.2.2.2",
+
+ "message" : "Association sent to PDP."
+
+}
+
+
+
+
+
+
+
+
+Delete Identity (v1.0)
+Description
+
+Delete Identity Awareness associations for one IP address, a range of IP addresses, or a subnet.
+
+Syntax
+
+POST https://<GW_IP_or_FQDN>/_IA_API/v1.0/delete-identity
+
+
+Examples
+
+Example request 1: Delete by IP
+
+POST https://gw.acme.com/_IA_API/1.0/delete-identity
+
+{
+
+ "shared-secret":"****",
+
+ "ip-address":"1.1.1.1"
+
+}
+
+Response 1
+
+{
+
+ "count":"1",
+
+ "ipv4-address":"1.1.1.1",
+
+ "message":"Disassociation sent to PDP."
+
+}
+
+Example request 2: Delete by IP range
+
+POST https://gw.acme.com/_IA_API/v1.0/delete-identity
+
+{
+
+ "shared-secret":"****",
+
+ "revoke-method":"range",
+
+ "ip-address-first":"1.1.1.2",
+
+ "ip-address-last":"1.1.1.3"
+
+}
+
+Response 2
+
+{
+
+ "count":"2",
+
+ "message":"Total of 2 IPs disassociations will be processed."
+
+}
+
+Example request 3: Delete by IP subnet
+
+POST https://gw.acme.com/_IA_API/idasdk/delete-identity
+
+{
+
+ "shared-secret":"****",
+
+ "revoke-method":" mask",
+
+ "subnet":"1.1.1.1",
+
+ "subnet-mask":"255.255.255.0"
+
+}
+
+Response 3
+
+ {
+
+ "count":"100",
+
+ "message":"Total of 100 IPs disassociations will be processed."
+
+}
+
+
+
+
+
+
+
+
+Query Identity (v1.0)
+Description
+
+Queries the Identity Awareness associations of a given IP address.
+
+Syntax
+
+POST https://<Gateway_IP_or_FQDN>/_IA_API/idasdk/show-identity
+
+Examples
+
+Request 1
+
+POST https://gw.acme.com/_IA_API/v1.0/show-identity
+
+{
+
+ "shared-secret":"****",
+
+ "ip-address":"1.1.1.1"
+
+}
+
+ 
+
+Response 1: User identity is available
+
+{
+
+ "combined-roles":[
+
+ "All_Identified_Users",
+
+ "User_John"
+
+ ], 
+
+ "domain":"cme.com",
+
+ "ipv4-address":"1.1.1.1",
+
+ "machine":"admin-pc@cme.com",
+
+ "message":"total 1 user records were found.",
+
+ "users":[
+
+  {
+
+   "groups":[
+
+   "All Users",
+
+   "ad_user_John_Smith"
+
+   ],
+
+   "identity-source':AD Query",
+
+   "roles":[
+
+   "All_identified_Users",
+
+   "User_John"
+
+   ],
+
+   "user":"JohnSmith"
+
+  }
+
+ ]
+
+}
+
+Response 2: User and computer identities are available
+
+{
+
+ "combined-roles":[
+
+ "Admin-PC_cme.com",
+
+ "All_Identified_Users",
+
+ "User_John"
+
+ ],
+
+ "domain":"cme.com",
+
+ "ipv4-address":"192.168.110.126",
+
+ "machine":"admin-pc@ad.ida",
+
+ "machine-groups":[
+
+ "ad_machine_ADMINPC",
+
+ "All Machines"
+
+ ],
+
+ "machine-identity-source":"Identiy Awareness API (ACME API Client):,
+
+ "message":"total 1 user records were found.",
+
+ "users":[
+
+  {
+
+   "groups":[
+
+   "All Users",
+
+   "ad_user_John_Smith"
+
+   ],
+
+   "identity-source": "Identity Awareness API (ACME API Client)",
+
+   "roles":[
+
+   "Admin-PC_ad.ida",
+
+   "All_Identified_Users",
+
+   "User_John"
+
+   ],
+
+   "user":"John Smith"
+
+  }
+
+ ]
+
+}
+
+Response 3: Multiple user identities are available
+
+{
+
+ "combined-roles":[
+
+ "Admin-PC",
+
+ "All_Identified_Users",
+
+ "User_John"
+
+ ],
+
+ "domain":"cme.com",
+
+ "ipv4-address":"192.168.110.126",
+
+ "machine":"admin-pc@cme.com",
+
+ "machine-identity-source":"AD Query",
+
+ "ad_machine_ADMINPC",
+
+ "All Machines"
+
+ ],
+
+ "message":"total 2 user records were found.",
+
+ "users":[
+
+  {
+
+   "groups":[
+
+   "All Users"
+
+   ],
+
+   "identity-source": "AD Query",
+
+   "roles":[
+
+   "Admin-PC",
+
+   "All_Identified_Users"
+
+   ],
+
+   "user":"George Black"
+
+  },
+
+  {
+
+   "groups":[
+
+   "All Users",
+
+   "ad_user_John_Smith"
+
+   ],
+
+   "identity-source": "AD Query",
+
+   "roles":[
+
+   "Admin-PC",
+
+   "All_Identified_Users",
+
+   "User_John"
+
+   ],
+
+   "user":"John Smith"
+
+  }
+
+ ]
+
+}
+
+Response 4: No identity found
+
+{
+
+ "ipv4-address" : "1.1.1.1",
+
+ "message" : "total 0 user records were found."
+
+}
