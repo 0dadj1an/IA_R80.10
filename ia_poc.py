@@ -83,6 +83,8 @@ def main():
             connect = Connector(url, 'add-identity', payload_list_common)
             connect.call_api()
             payload_list_common['ip-address'] = ""
+    
+    #print (locals())
             
         
     
