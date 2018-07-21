@@ -60,7 +60,7 @@ def get_ipv4_from_machine():
 
 def main():
 
-    url= 'https://10.10.73.32/_IA_API/'
+    url= 'https://10.10.0.5/_IA_API/'
     payload_list_common= {
                     "shared-secret":"m9C3Hkp1W5",
                     "user":"ivos",
